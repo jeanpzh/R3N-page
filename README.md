@@ -1,36 +1,64 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Biomedical Named Entity Recognizer (NER)
 
-## Getting Started
+Esta es una aplicación web de interfaz (frontend) construida con Next.js diseñada para el **Reconocimiento de Entidades Nombradas (NER) en textos biomédicos**.
 
-First, run the development server:
+La aplicación permite a los usuarios pegar o escribir texto médico y enviar una solicitud a un servicio de backend (API) para su análisis. Los resultados se muestran resaltando las entidades encontradas (**Químico** y **Enfermedad**) directamente en el texto y en una lista detallada.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Características
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+* **Análisis de Texto Interactivo:** Un área de texto para que los usuarios ingresen el contenido a analizar.
+* **Texto Anotado:** Muestra el texto original con las entidades reconocidas (`Chemical`, `Disease`) resaltadas con colores distintivos.
+* **Lista de Entidades:** Enumera todas las entidades encontradas, mostrando su tipo (ej. "Disease") y el puntaje de confianza del modelo.
+* **Leyenda:** Indica claramente qué color corresponde a cada tipo de entidad.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Stack Tecnológico
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+[![Stack Tecnológico](https://skillicons.dev/icons?i=nextjs,ts,tailwind,query&theme=light)](https://skillicons.dev)
 
-## Learn More
 
-To learn more about Next.js, take a look at the following resources:
+## Backend Request
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+* **Endpoint Esperado:** La aplicación está configurada para hacer peticiones `POST` a un endpoint `/predict`.
+* **URL Base:** Por defecto, intentará conectarse a `http://localhost:8000`.
+* **Configuración:** Puedes cambiar la URL base de la API creando un archivo `.env.local` en la raíz del proyecto y definiendo la variable `NEXT_PUBLIC_API_BASE_URL`:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+    ```.env.local
+    NEXT_PUBLIC_API_BASE_URL=[https://tu-api-backend.com](https://tu-api-backend.com)
+    ```
 
-## Deploy on Vercel
+* **Formato de la API:**
+    * **Request (`POST /predict`):** El frontend envía un JSON con el siguiente formato:
+        ```json
+        {
+          "text": "Cidofovir is used to treat CMV retinitis in patients with AIDS. The drug has shown significant efficacy in reducing viral load."
+        }
+        ```
+    * **Response (Respuesta esperada):** El backend debe responder con un JSON que contenga un arreglo de entidades bajo la clave `predictions`:
+        ```json
+        {
+            "predictions": [
+                {
+                    "entity_group": "Chemical",
+                    "score": 0.998,
+                    "word": "Cidofovir",
+                    "start": 0,
+                    "end": 9
+                },
+                {
+                    "entity_group": "Disease",
+                    "score": 0.975,
+                    "word": "CMV retinitis",
+                    "start": 28,
+                    "end": 41
+                },
+                {
+                    "entity_group": "Disease",
+                    "score": 0.995,
+                    "word": "AIDS",
+                    "start": 59,
+                    "end": 63
+                }
+            ]
+        }
+        ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
